@@ -1,0 +1,21 @@
+FROM node:24.22.1 AS development
+
+# 1. Definir el directorio de trabajo interno
+WORKDIR /app
+
+# Esto es clave para la cache
+COPY --chown=node:node package*.json ./
+
+# esto equivalente a npm install
+RUN npm install
+
+# copiamos el destino
+COPY --chown=node:node . .
+
+# 2. Exponer el puerto de tu archivo .env
+EXPOSE 5000
+
+USER node
+
+# 7. Ejecutar la aplicación
+CMD ["npm","run", "start:dev"]

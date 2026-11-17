@@ -1,0 +1,35 @@
+services:
+  postgres-db-dev:
+    image: postgres
+    ports:
+      - "5433:5432"
+    env_file:
+      - .env.dev
+    volumes:
+      - kaia-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kaia-dev -d kaia-api-dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - kaia-app
+  kaia-dev:
+    build: 
+      context: .
+      dockerfile: dockerfile.dev
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres-db-dev:
+        condition: service_healthy
+    env_file:
+      - .env.dev
+    networks:
+      - kaia-app
+  # Definir volumenes
+volumes:
+  kaia-data:
+networks:
+  kaia-app:
+    name: "kaia-app"
